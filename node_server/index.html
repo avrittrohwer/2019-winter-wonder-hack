@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet" />
+  <style>
+    body {
+      background: black;
+      color: white;
+      font-family: "Press Start 2P";
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+      height: 100%;
+      width: 100%;
+      padding: 1em;
+      margin: 0;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      font-size: 5em;
+    }
+
+    button {
+      border: none;
+      font-family: inherit;
+      padding: 1em;
+      border-radius: 3px;
+      background-color: white;
+      color: black;
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+  <h2>Player <span id="player-num"></span></h2>
+  <h1 id="score">0</h1>
+  <button id="start">Start</button>
+  <h2 id="error"></h2>
+</body>
+
+<script>
+  const p_num = document.getElementById("player-num");
+  const score = document.getElementById("score");
+  const start_btn = document.getElementById("start");
+
+  if (DeviceOrientationEvent && WebSocket) {
+    // NOTE: this file must be served by server to replace HOST_IP
+    const socket = new WebSocket("ws://HOST_IP:9000");
+
+    socket.addEventListener("message", e => {
+      const data = JSON.parse(e.data);
+
+      switch (data.type) {
+        case "player_num":
+          p_num.innerText = data.msg;
+        case "score":
+          score.innerText = data.msg;
+      }
+    });
+
+    start_btn.addEventListener("click", () => {
+      socket.send(JSON.stringify({ type: "start" }));
+    });
+
+    addEventListener("deviceorientation", e => {
+      let angle = Math.floor(e.beta);
+      if (angle < 0) {
+        angle = 0;
+      }
+      if (angle > 75) {
+        angle = 75;
+      }
+
+      socket.send(JSON.stringify({ type: "angle", msg: angle }));
+    });
+  } else {
+    document.getElementById("error").innerHTML("Phone not supported.");
+  }
+</script>
