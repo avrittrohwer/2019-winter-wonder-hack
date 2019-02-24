@@ -1,6 +1,6 @@
 # 2019-winter-wonder-hack
 
-This is a pong game with the graphics stack written in C using OpenGL and helper libraries at
+This is a pong game with the graphics stack written in C using OpenGL and helper libraries
 located at https://gitlab.com/kuhl/opengl-examples. The paddles are controlled with devices that
 have the `DeviceOrientationEvent` and `WebSocket` web APIs enabled.
 
